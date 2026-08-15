@@ -30,7 +30,10 @@ export function createApp() {
   );
 
   // Webhook route MUST be mounted before express.json() — needs raw body for Stripe sig verification
-  app.use("/api/v1/webhooks", createWebhooksRouter(container.webhooksController));
+  app.use(
+    "/api/v1/webhooks",
+    createWebhooksRouter(container.webhooksController),
+  );
 
   app.use(express.json());
   app.use(cookieParser());
@@ -39,13 +42,22 @@ export function createApp() {
   const api = "/api/v1";
   app.use(`${api}/auth`, createAuthRouter(container.authController));
   app.use(`${api}/plans`, createPlansRouter(container.plansController));
-  app.use(`${api}/checkout`, createPaymentsRouter(container.paymentsController));
-  app.use(`${api}/org/billing`, createPaymentsRouter(container.paymentsController));
+  app.use(
+    `${api}/checkout`,
+    createPaymentsRouter(container.paymentsController),
+  );
+  app.use(
+    `${api}/org/billing`,
+    createPaymentsRouter(container.paymentsController),
+  );
   app.use(`${api}/org`, createOrganizationsRouter(container.orgsController));
   app.use(`${api}/org`, createSubscriptionsRouter(container.subsController));
   app.use(`${api}/org`, createTransactionsRouter(container.txController));
   app.use(`${api}/me`, createUsersRouter(container.usersController));
-  app.use(`${api}/platform`, createPlatformRouter(container.platformController, container.txController));
+  app.use(
+    `${api}/platform`,
+    createPlatformRouter(container.platformController, container.txController),
+  );
 
   app.use(errorHandler);
 
