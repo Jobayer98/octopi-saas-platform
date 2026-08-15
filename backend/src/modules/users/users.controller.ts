@@ -13,23 +13,23 @@ export class UsersController {
     return ctx;
   }
 
-  getProfile = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async getProfile(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       res.json(await this.service.getProfile(this.ctx().userId));
     } catch (err) { next(err); }
-  };
+  }
 
-  updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const input = updateProfileSchema.parse(req.body);
       res.json(await this.service.updateProfile(this.ctx().userId, input));
     } catch (err) { next(err); }
-  };
+  }
 
-  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const input = changePasswordSchema.parse(req.body);
       res.json(await this.service.changePassword(this.ctx().userId, input));
     } catch (err) { next(err); }
-  };
+  }
 }
