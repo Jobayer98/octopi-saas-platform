@@ -4,7 +4,7 @@ import { WebhooksService } from "./webhooks.service.js";
 export class WebhooksController {
   constructor(private readonly service: WebhooksService) {}
 
-  handleStripe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async handleStripe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const signature = req.headers["stripe-signature"] as string;
       await this.service.handleStripeWebhook(req.body as Buffer, signature);
@@ -12,5 +12,5 @@ export class WebhooksController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 }

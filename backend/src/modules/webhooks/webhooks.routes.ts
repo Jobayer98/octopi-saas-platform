@@ -9,7 +9,7 @@ export function createWebhooksRouter(controller: WebhooksController): Router {
   router.post(
     "/stripe",
     express.raw({ type: "application/json" }),
-    controller.handleStripe,
+    controller.handleStripe.bind(controller),
   );
 
   return router;

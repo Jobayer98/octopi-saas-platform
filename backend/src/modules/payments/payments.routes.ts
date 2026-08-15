@@ -9,10 +9,10 @@ export function createPaymentsRouter(controller: PaymentsController): Router {
   const router = Router();
   const orgAdmin = [authenticate, authorizeTenant, authorizeRole(Role.ORG_ADMIN)];
 
-  router.post("/session", authenticate, authorizeTenant, controller.createSession);
-  router.get("/status", authenticate, authorizeTenant, controller.getStatus);
+  router.post("/session", authenticate, authorizeTenant, controller.createSession.bind(controller));
+  router.get("/status", authenticate, authorizeTenant, controller.getStatus.bind(controller));
   // Billing history also accessible via /org/billing/payments — mounted under /checkout here
-  router.get("/payments", ...orgAdmin, controller.getPaymentHistory);
+  router.get("/payments", ...orgAdmin, controller.getPaymentHistory.bind(controller));
 
   return router;
 }

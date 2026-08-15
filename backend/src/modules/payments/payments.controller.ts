@@ -8,7 +8,7 @@ import { parsePagination } from "../../common/utils/pagination.js";
 export class PaymentsController {
   constructor(private readonly service: PaymentsService) {}
 
-  createSession = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async createSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();
       if (!ctx?.organizationId) throw new UnauthorizedError();
@@ -16,22 +16,22 @@ export class PaymentsController {
       const session = await this.service.createCheckoutSession(ctx.organizationId, planId, ctx.userId);
       res.status(201).json(session);
     } catch (err) { next(err); }
-  };
+  }
 
-  getStatus = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async getStatus(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();
       if (!ctx?.organizationId) throw new UnauthorizedError();
       res.json(await this.service.getCheckoutStatus(ctx.organizationId));
     } catch (err) { next(err); }
-  };
+  }
 
-  getPaymentHistory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async getPaymentHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();
       if (!ctx?.organizationId) throw new UnauthorizedError();
       const { page, limit } = parsePagination(req.query as Record<string, unknown>);
       res.json(await this.service.getPaymentHistory(ctx.organizationId, page, limit));
     } catch (err) { next(err); }
-  };
+  }
 }
