@@ -1,0 +1,65 @@
+# ==========================================
+# Dependencies & Package Managers
+# ==========================================
+node_modules/
+/.pnp
+.pnp.js
+modules.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
+# Next.js Build Outputs & Caches
+# ==========================================
+/.next/
+/out/
+build/
+dist/
+.cache/
+.swc/
+
+# ==========================================
+# Prisma Specifics
+# ==========================================
+# Environment secrets (Database URL, etc.)
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases
+*.db
+*.db-journal
+
+# Custom generated client output paths (if overridden)
+/generated/
+/src/generated/prisma/
+
+# ==========================================
+# TypeScript & Environment Declarations
+# ==========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ==========================================
+# Deployment & Debugging Tools
+# ==========================================
+.vercel/
+
+# ==========================================
+# Development Tools & OS Files
+# ==========================================
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
