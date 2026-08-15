@@ -107,9 +107,11 @@ export default function RegisterPage() {
 
           <div className="border-t pt-4 space-y-3">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Select a plan</p>
-            <Select onValueChange={(v) => setValue("planId", v as string)}>
+            <Select onValueChange={(v) => setValue("planId", v as string)} value={selectedPlanId}>
               <SelectTrigger>
-                <SelectValue placeholder="Choose a plan…" />
+                <SelectValue placeholder="Choose a plan…">
+                  {selectedPlan ? selectedPlan.name : "Choose a plan…"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {plans?.map((p) => (

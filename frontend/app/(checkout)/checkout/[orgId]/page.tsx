@@ -32,7 +32,8 @@ function CheckoutContent() {
   });
 
   const createSession = useMutation({
-    mutationFn: () => api.post<{ url: string }>("/checkout/session", { organizationId: orgId }),
+    mutationFn: (planId?: string) =>
+      api.post<{ url: string }>("/checkout/session", { organizationId: orgId, planId }),
     onSuccess: (res) => {
       window.location.href = (res.data as { url: string }).url;
     },

@@ -1,14 +1,18 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { api, getApiError } from "@/lib/api-client";
 import { Subscription, Plan } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { useAuthStore } from "@/stores/auth";
 
 export default function SubscriptionPage() {
   const qc = useQueryClient();
+  const router = useRouter();
+  const orgId = useAuthStore((s) => s.user?.organizationId);
 
   // Backend returns raw subscription object
   const { data: sub, isLoading: subLoading } = useQuery<Subscription>({
@@ -20,6 +24,20 @@ export default function SubscriptionPage() {
   const { data: plans } = useQuery<Plan[]>({
     queryKey: ["plans"],
     queryFn: async () => (await api.get("/plans")).data,
+  });
+
+  const retryPayment = useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ url: string }>("/checkout/session", {
+        planId: sub?.planId,
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      if (orgId) router.push(`/checkout/${orgId}`);
+      else window.location.href = data.url;
+    },
+    onError: (err) => toast.error(getApiError(err)),
   });
 
   const changePlan = useMutation({
@@ -66,6 +84,11 @@ export default function SubscriptionPage() {
               {sub.status === "ACTIVE" && (
                 <Button variant="destructive" size="sm" onClick={() => cancel.mutate()} disabled={cancel.isPending}>
                   {cancel.isPending ? "Cancelling…" : "Cancel subscription"}
+                </Button>
+              )}
+              {(sub.status === "PENDING" || sub.status === "FAILED") && (
+                <Button size="sm" onClick={() => retryPayment.mutate()} disabled={retryPayment.isPending}>
+                  {retryPayment.isPending ? "Redirecting…" : "Complete payment"}
                 </Button>
               )}
             </>

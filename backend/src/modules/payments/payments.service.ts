@@ -15,10 +15,16 @@ export class PaymentsService {
 
   async createCheckoutSession(
     organizationId: string,
-    planId: string,
+    planId: string | undefined,
     userId: string,
   ) {
-    const plan = await this.subsRepo.findPlanById(planId);
+    // If no planId provided, fall back to the org's latest pending subscription
+    const resolvedPlanId = planId ?? (
+      await this.subsRepo.findLatestByOrg(organizationId)
+    )?.planId;
+    if (!resolvedPlanId) throw new BadRequestError("planId is required");
+
+    const plan = await this.subsRepo.findPlanById(resolvedPlanId);
     if (!plan || !plan.isActive)
       throw new BadRequestError("Invalid or inactive plan");
 
@@ -31,12 +37,12 @@ export class PaymentsService {
 
     const session = await this.paymentProvider.createCheckoutSession({
       organizationId,
-      planId,
+      planId: resolvedPlanId,
       planName: plan.name,
       priceCents: plan.priceCents,
       currency: "inr",
-      successUrl: `${env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${env.FRONTEND_URL}/checkout/cancel`,
+      successUrl: `${env.FRONTEND_URL}/checkout/${organizationId}?status=success`,
+      cancelUrl: `${env.FRONTEND_URL}/checkout/${organizationId}?status=cancel`,
       customerEmail,
     });
 
