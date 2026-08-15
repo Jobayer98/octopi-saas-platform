@@ -4,7 +4,7 @@ import {
   OrgStatus,
   SubscriptionStatus,
   BillingInterval,
-} from "../generated/prisma/client";
+} from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcrypt";
 import "dotenv/config";
