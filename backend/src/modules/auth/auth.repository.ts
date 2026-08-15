@@ -1,8 +1,8 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaExtended } from "../../common/lib/prisma.js";
 import { Role, OrgStatus } from "../../generated/prisma/enums.js";
 
 export class AuthRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: PrismaExtended) {}
 
   async findUserByEmail(email: string) {
     return this.db.user.findUnique({

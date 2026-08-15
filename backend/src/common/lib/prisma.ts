@@ -16,7 +16,9 @@ function withTenantWhere(args: any, organizationId: string) {
   return { ...args, where: { ...args?.where, organizationId } };
 }
 
-export const prisma = new PrismaClient({ adapter }).$extends({
+const basePrisma = new PrismaClient({ adapter });
+
+export const prisma = basePrisma.$extends({
   query: {
     $allModels: {
       async findMany({ model, args, query }: any) {
@@ -34,3 +36,5 @@ export const prisma = new PrismaClient({ adapter }).$extends({
     },
   },
 });
+
+export type PrismaExtended = typeof prisma;

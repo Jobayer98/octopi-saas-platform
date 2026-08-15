@@ -39,8 +39,11 @@ export function TopBar() {
     <header className="h-14 border-b flex items-center justify-between px-6 shrink-0 bg-background">
       <span className="font-semibold text-sm tracking-tight">Octopi Platform</span>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="flex items-center gap-2 h-9 px-2">
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" className="flex items-center gap-2 h-9 px-2" />
+          }
+        >
             <Avatar className="h-7 w-7">
               <AvatarFallback className="text-xs">
                 {user?.name?.[0]?.toUpperCase() ?? "U"}
@@ -52,7 +55,6 @@ export function TopBar() {
                 {user?.role ? roleLabel[user.role] : ""}
               </p>
             </div>
-          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuGroup>

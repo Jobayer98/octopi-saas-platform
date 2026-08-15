@@ -129,7 +129,7 @@ export default function RegisterPage() {
                 </p>
                 {(selectedPlan.features as string[]).length > 0 && (
                   <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-                    {(selectedPlan.features as string[]).map((f, i) => <li key={i}>{f}</li>)}
+                    {selectedPlan.features.map((f, i) => <li key={i}>{String(f)}</li>)}
                   </ul>
                 )}
               </div>

@@ -1,9 +1,10 @@
-import { PrismaClient, OrgStatus } from "../../generated/prisma/client.js";
+import type { PrismaExtended } from "../../common/lib/prisma.js";
+import { OrgStatus } from "../../generated/prisma/client.js";
 import type { UpdateOrgProfileInput } from "./organizations.types.js";
 import { paginate } from "../../common/utils/pagination.js";
 
 export class OrganizationsRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: PrismaExtended) {}
 
   async findById(id: string) {
     return this.db.organization.findUnique({

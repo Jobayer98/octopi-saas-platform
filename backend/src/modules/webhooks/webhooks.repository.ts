@@ -1,7 +1,7 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaExtended } from "../../common/lib/prisma.js";
 
 export class WebhooksRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: PrismaExtended) {}
 
   async processCheckoutCompleted(data: {
     stripeEventId: string;

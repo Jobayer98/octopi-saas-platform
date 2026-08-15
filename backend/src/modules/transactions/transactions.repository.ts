@@ -1,8 +1,9 @@
-import { PrismaClient, TransactionStatus } from "../../generated/prisma/client.js";
+import type { PrismaExtended } from "../../common/lib/prisma.js";
+import { TransactionStatus } from "../../generated/prisma/client.js";
 import { paginate } from "../../common/utils/pagination.js";
 
 export class TransactionsRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: PrismaExtended) {}
 
   async findByOrg(
     organizationId: string,

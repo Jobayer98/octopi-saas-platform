@@ -1,8 +1,8 @@
-import { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaExtended } from "../../common/lib/prisma.js";
 import { paginate } from "../../common/utils/pagination.js";
 
 export class PaymentsRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: PrismaExtended) {}
 
   async findByOrg(organizationId: string, page: number, limit: number) {
     const [data, total] = await Promise.all([
