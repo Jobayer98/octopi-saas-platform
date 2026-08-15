@@ -35,8 +35,8 @@ dist/
 *.db-journal
 
 # Custom generated client output paths (if overridden)
-/generated/
-/src/generated/prisma/
+generated/
+src/generated/prisma/
 
 # ==========================================
 # TypeScript & Environment Declarations
@@ -63,3 +63,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.swp
+
+.agents
+.claude
+.windsurf

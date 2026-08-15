@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PLATFORM_ADMIN
+  ORG_ADMIN
+  ORG_MEMBER
+}
+
+enum OrgStatus {
+  PENDING_PAYMENT
+  ACTIVE
+  TRIAL
+  SUSPENDED
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+  ROLLED_BACK
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+model Organization {
+  id           String    @id @default(cuid())
+  name         String
+  billingEmail String
+  contactInfo  Json?
+  status       OrgStatus @default(PENDING_PAYMENT)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  users         User[]
+  subscriptions Subscription[]
+  payments      Payment[]
+  transactions  Transaction[]
+  invites       Invite[]
+
+  @@index([status])
+}
+
+model User {
+  id             String   @id @default(cuid())
+  organizationId String? // null ONLY for PLATFORM_ADMIN
+  email          String   @unique
+  passwordHash   String
+  name           String
+  role           Role
+  status         String   @default("ACTIVE") // ACTIVE | REMOVED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization  Organization?        @relation(fields: [organizationId], references: [id])
+  refreshTokens RefreshToken[]
+  resetTokens   PasswordResetToken[]
+
+  @@index([organizationId])
+}
+
+model Plan {
+  id              String          @id @default(cuid())
+  name            String
+  priceCents      Int
+  billingInterval BillingInterval
+  features        Json // string[] rendered as JSON
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  organizationId       String
+  planId               String
+  status               SubscriptionStatus @default(PENDING)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  stripeSubscriptionId String? // if using Stripe Subscriptions; optional for Checkout-only flow
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  plan         Plan         @relation(fields: [planId], references: [id])
+  payments     Payment[]
+
+  @@index([organizationId])
+}
+
+model Payment {
+  id                      String        @id @default(cuid())
+  organizationId          String
+  subscriptionId          String?
+  amountCents             Int
+  currency                String        @default("usd")
+  status                  PaymentStatus @default(PENDING)
+  stripePaymentIntentId   String?       @unique
+  stripeCheckoutSessionId String?       @unique
+  failureReason           String?
+  createdAt               DateTime      @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  transaction  Transaction?
+
+  @@index([organizationId])
+}
+
+model Transaction {
+  id             String            @id @default(cuid())
+  organizationId String
+  paymentId      String?           @unique
+  type           String // SUBSCRIPTION_PAYMENT | REFUND | ROLLBACK
+  status         TransactionStatus @default(PENDING)
+  amountCents    Int
+  metadata       Json?
+  createdAt      DateTime          @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  payment      Payment?     @relation(fields: [paymentId], references: [id])
+
+  @@index([organizationId, status])
+}
+
+// Idempotency ledger for Stripe webhooks — the row IS the idempotency key
+model WebhookEvent {
+  id          String   @id // Stripe event.id, used as PK on purpose
+  type        String
+  payload     Json
+  processedAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Invite {
+  id             String    @id @default(cuid())
+  organizationId String
+  email          String
+  role           Role
+  tokenHash      String
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+}
+
+model NotificationLog {
+  id             String   @id @default(cuid())
+  organizationId String?
+  userId         String?
+  type           String // MEMBER_INVITED | PAYMENT_SUCCESS | PAYMENT_FAILED | SUB_UPGRADED
+  channel        String   @default("email")
+  status         String // SENT | FAILED
+  createdAt      DateTime @default(now())
+}

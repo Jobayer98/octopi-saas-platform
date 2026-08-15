@@ -9,17 +9,17 @@ Rules for using this list:
 
 ## Phase 0 — Scaffolding (~1h)
 
-- [ ] Init monorepo folders (`backend/`, `frontend/`, `docs/`, `scripts/`), root `.gitignore`
-- [ ] Backend: Express + TS + tsx/ts-node-dev, eslint+prettier, `.env.example`
+- [x] Init monorepo folders (`backend/`, `frontend/`, `docs/`, `scripts/`), root `.gitignore`
+- [x] Backend: Express + TS + tsx/ts-node-dev, eslint+prettier, `.env.example`
 - [ ] Frontend: Next.js (App Router) + TS + Tailwind + shadcn init
-- [ ] `docker-compose.yml` for Postgres (+ Maildev for email sandbox)
+- [ ] `docker-compose.yml` for Postgres
 - [ ] Root README skeleton with "How to run locally" placeholder (fill in as you go, not at the end)
 
 ## Phase 1 — Database foundation (~1.5h)
 
-- [ ] Write `schema.prisma` (from DATABASE-SCHEMA.md)
-- [ ] First migration, generate client
-- [ ] `seed.ts`: platform admin, 2 demo plans, one demo org+admin+member (all three login roles ready from day 1 — you need this for every later manual test)
+- [x] Write `schema.prisma` (from DATABASE-SCHEMA.md)
+- [x] First migration, generate client
+- [x] `seed.ts`: platform admin, 2 demo plans, one demo org+admin+member (all three login roles ready from day 1 — you need this for every later manual test)
 - [ ] Unit test: none yet (schema has no logic) — **manual test:** `prisma studio`, confirm relations
 
 ## Phase 2 — Common/DI foundation (~1h)
