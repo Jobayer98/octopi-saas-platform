@@ -13,12 +13,20 @@ export class PaymentsService {
     private readonly paymentProvider: PaymentProvider,
   ) {}
 
-  async createCheckoutSession(organizationId: string, planId: string, userId: string) {
+  async createCheckoutSession(
+    organizationId: string,
+    planId: string,
+    userId: string,
+  ) {
     const plan = await this.subsRepo.findPlanById(planId);
-    if (!plan || !plan.isActive) throw new BadRequestError("Invalid or inactive plan");
+    if (!plan || !plan.isActive)
+      throw new BadRequestError("Invalid or inactive plan");
 
     // Fetch email from DB — never trust body for this
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    });
     const customerEmail = user?.email ?? "";
 
     const session = await this.paymentProvider.createCheckoutSession({
@@ -26,7 +34,7 @@ export class PaymentsService {
       planId,
       planName: plan.name,
       priceCents: plan.priceCents,
-      currency: "usd",
+      currency: "inr",
       successUrl: `${env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${env.FRONTEND_URL}/checkout/cancel`,
       customerEmail,
@@ -41,7 +49,11 @@ export class PaymentsService {
   }
 
   async getPaymentHistory(organizationId: string, page: number, limit: number) {
-    const { data, total } = await this.repo.findByOrg(organizationId, page, limit);
+    const { data, total } = await this.repo.findByOrg(
+      organizationId,
+      page,
+      limit,
+    );
     return buildPaginatedResult(data, total, { page, limit });
   }
 }
