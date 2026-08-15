@@ -14,14 +14,14 @@ export class SubscriptionsController {
     return ctx;
   }
 
-  getSubscription = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async getSubscription(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       res.json(await this.service.getSubscription(ctx.organizationId!));
     } catch (err) { next(err); }
-  };
+  }
 
-  upgrade = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async upgrade(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       const { planId } = upgradePlanSchema.parse(req.body);
@@ -30,9 +30,9 @@ export class SubscriptionsController {
         await this.service.createUpgradeSession(ctx.organizationId!, planId, user?.email ?? "")
       );
     } catch (err) { next(err); }
-  };
+  }
 
-  cancel = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async cancel(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       const org = await prisma.organization.findUnique({
@@ -43,5 +43,5 @@ export class SubscriptionsController {
         await this.service.cancelSubscription(ctx.organizationId!, org?.billingEmail ?? "", org?.name ?? "")
       );
     } catch (err) { next(err); }
-  };
+  }
 }

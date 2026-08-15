@@ -10,10 +10,10 @@ export function createSubscriptionsRouter(controller: SubscriptionsController): 
   const orgMember = [authenticate, authorizeTenant];
   const orgAdmin = [authenticate, authorizeTenant, authorizeRole(Role.ORG_ADMIN)];
 
-  router.get("/subscription", ...orgMember, controller.getSubscription);
-  router.post("/subscription/upgrade", ...orgAdmin, controller.upgrade);
-  router.post("/subscription/downgrade", ...orgAdmin, controller.upgrade); // same flow — new checkout session
-  router.post("/subscription/cancel", ...orgAdmin, controller.cancel);
+  router.get("/subscription", ...orgMember, controller.getSubscription.bind(controller));
+  router.post("/subscription/upgrade", ...orgAdmin, controller.upgrade.bind(controller));
+  router.post("/subscription/downgrade", ...orgAdmin, controller.upgrade.bind(controller)); // same flow — new checkout session
+  router.post("/subscription/cancel", ...orgAdmin, controller.cancel.bind(controller));
 
   return router;
 }

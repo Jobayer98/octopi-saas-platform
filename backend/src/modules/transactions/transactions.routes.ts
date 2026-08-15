@@ -13,7 +13,7 @@ export function createTransactionsRouter(controller: TransactionsController): Ro
     authenticate,
     authorizeTenant,
     authorizeRole(Role.ORG_ADMIN),
-    controller.getOrgTransactions,
+    controller.getOrgTransactions.bind(controller),
   );
 
   return router;
