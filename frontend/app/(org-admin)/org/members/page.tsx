@@ -197,7 +197,7 @@ export default function MembersPage() {
                       <Select
                         defaultValue={m.role}
                         onValueChange={(v) =>
-                          changeRole.mutate({ userId: m.id, role: v })
+                          changeRole.mutate({ userId: m.id, role: v as string })
                         }
                       >
                         <SelectTrigger className="w-32 h-8 text-xs">

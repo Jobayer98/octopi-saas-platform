@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
           <div className="border-t pt-4 space-y-3">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Select a plan</p>
-            <Select onValueChange={(v) => setValue("planId", v)}>
+            <Select onValueChange={(v) => setValue("planId", v as string)}>
               <SelectTrigger>
                 <SelectValue placeholder="Choose a plan…" />
               </SelectTrigger>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                 </p>
                 {(selectedPlan.features as string[]).length > 0 && (
                   <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-                    {selectedPlan.features.map((f, i) => <li key={i}>{String(f)}</li>)}
+                    {(selectedPlan.features as string[]).map((f, i) => <li key={i}>{f}</li>)}
                   </ul>
                 )}
               </div>
