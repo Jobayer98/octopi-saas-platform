@@ -8,10 +8,10 @@ export function createPlansRouter(controller: PlansController): Router {
   const router = Router();
   const adminOnly = [authenticate, authorizeRole(Role.PLATFORM_ADMIN)];
 
-  router.get("/", authenticate, controller.list);
-  router.post("/", ...adminOnly, controller.create);
-  router.patch("/:id", ...adminOnly, controller.update);
-  router.patch("/:id/disable", ...adminOnly, controller.disable);
+  router.get("/", authenticate, controller.list.bind(controller));
+  router.post("/", ...adminOnly, controller.create.bind(controller));
+  router.patch("/:id", ...adminOnly, controller.update.bind(controller));
+  router.patch("/:id/disable", ...adminOnly, controller.disable.bind(controller));
 
   return router;
 }

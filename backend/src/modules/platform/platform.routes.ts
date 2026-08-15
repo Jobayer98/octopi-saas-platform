@@ -13,14 +13,14 @@ export function createPlatformRouter(
 ): Router {
   const router = Router();
 
-  router.get("/stats", ...adminOnly, controller.getStats);
-  router.get("/organizations", ...adminOnly, controller.listOrgs);
-  router.get("/organizations/:id", ...adminOnly, controller.getOrg);
-  router.patch("/organizations/:id/suspend", ...adminOnly, controller.suspendOrg);
-  router.patch("/organizations/:id/reactivate", ...adminOnly, controller.reactivateOrg);
+  router.get("/stats", ...adminOnly, controller.getStats.bind(controller));
+  router.get("/organizations", ...adminOnly, controller.listOrgs.bind(controller));
+  router.get("/organizations/:id", ...adminOnly, controller.getOrg.bind(controller));
+  router.patch("/organizations/:id/suspend", ...adminOnly, controller.suspendOrg.bind(controller));
+  router.patch("/organizations/:id/reactivate", ...adminOnly, controller.reactivateOrg.bind(controller));
 
   if (txController) {
-    router.get("/transactions", ...adminOnly, txController.getAllTransactions);
+    router.get("/transactions", ...adminOnly, txController.getAllTransactions.bind(txController));
   }
 
   return router;

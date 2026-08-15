@@ -10,13 +10,13 @@ export function createOrganizationsRouter(controller: OrganizationsController): 
   const orgAdmin = [authenticate, authorizeTenant, authorizeRole(Role.ORG_ADMIN)];
   const orgMember = [authenticate, authorizeTenant];
 
-  router.get("/profile", ...orgMember, controller.getProfile);
-  router.patch("/profile", ...orgAdmin, controller.updateProfile);
-  router.get("/members", ...orgMember, controller.listMembers);
-  router.post("/members/invite", ...orgAdmin, controller.inviteMember);
-  router.post("/members/accept-invite", controller.acceptInvite); // public but token-gated
-  router.patch("/members/:userId/role", ...orgAdmin, controller.updateMemberRole);
-  router.delete("/members/:userId", ...orgAdmin, controller.removeMember);
+  router.get("/profile", ...orgMember, controller.getProfile.bind(controller));
+  router.patch("/profile", ...orgAdmin, controller.updateProfile.bind(controller));
+  router.get("/members", ...orgMember, controller.listMembers.bind(controller));
+  router.post("/members/invite", ...orgAdmin, controller.inviteMember.bind(controller));
+  router.post("/members/accept-invite", controller.acceptInvite.bind(controller)); // public but token-gated
+  router.patch("/members/:userId/role", ...orgAdmin, controller.updateMemberRole.bind(controller));
+  router.delete("/members/:userId", ...orgAdmin, controller.removeMember.bind(controller));
 
   return router;
 }

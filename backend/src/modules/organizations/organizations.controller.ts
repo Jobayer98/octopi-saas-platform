@@ -18,55 +18,55 @@ export class OrganizationsController {
     return ctx;
   }
 
-  getProfile = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async getProfile(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       res.json(await this.service.getProfile(ctx.organizationId!, ctx.role));
     } catch (err) { next(err); }
-  };
+  }
 
-  updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       const input = updateOrgProfileSchema.parse(req.body);
       res.json(await this.service.updateProfile(ctx.organizationId!, input));
     } catch (err) { next(err); }
-  };
+  }
 
-  listMembers = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async listMembers(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       res.json(await this.service.listMembers(ctx.organizationId!));
     } catch (err) { next(err); }
-  };
+  }
 
-  inviteMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async inviteMember(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       const input = inviteMemberSchema.parse(req.body);
       res.status(201).json(await this.service.inviteMember(ctx.organizationId!, input));
     } catch (err) { next(err); }
-  };
+  }
 
-  acceptInvite = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async acceptInvite(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const input = acceptInviteSchema.parse(req.body);
       res.status(201).json(await this.service.acceptInvite(input));
     } catch (err) { next(err); }
-  };
+  }
 
-  updateMemberRole = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async updateMemberRole(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       const { role } = updateMemberRoleSchema.parse(req.body);
       res.json(await this.service.updateMemberRole(ctx.organizationId!, String(req.params["userId"]), role, ctx.userId));
     } catch (err) { next(err); }
-  };
+  }
 
-  removeMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async removeMember(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = this.ctx();
       res.json(await this.service.removeMember(ctx.organizationId!, String(req.params["userId"]), ctx.userId));
     } catch (err) { next(err); }
-  };
+  }
 }
