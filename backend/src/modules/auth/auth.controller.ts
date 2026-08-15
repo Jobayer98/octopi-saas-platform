@@ -19,7 +19,11 @@ const COOKIE_OPTS = {
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async register(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const input = registerSchema.parse(req.body);
       const result = await this.service.register(input);
@@ -27,9 +31,9 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const input = loginSchema.parse(req.body);
       const { accessToken, refreshToken, refreshTokenId, user } =
@@ -40,24 +44,33 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async refresh(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const token = req.cookies?.[REFRESH_COOKIE] as string | undefined;
       if (!token) {
-        res.status(401).json({ error: { code: "UNAUTHORIZED", message: "No refresh token" } });
+        res.status(401).json({
+          error: { code: "UNAUTHORIZED", message: "No refresh token" },
+        });
         return;
       }
       const tokens = await this.service.refresh(token);
       res.cookie(REFRESH_COOKIE, tokens.refreshToken, COOKIE_OPTS);
-      res.json({ accessToken: tokens.accessToken, refreshTokenId: tokens.refreshTokenId });
+      res.json({
+        accessToken: tokens.accessToken,
+        refreshTokenId: tokens.refreshTokenId,
+      });
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();
       const tokenId = (req.body as { refreshTokenId?: string }).refreshTokenId;
@@ -67,9 +80,13 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async forgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { email } = forgotPasswordSchema.parse(req.body);
       await this.service.forgotPassword(email);
@@ -77,9 +94,13 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async resetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { token, password } = resetPasswordSchema.parse(req.body);
       await this.service.resetPassword(token, password);
@@ -87,13 +108,15 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  me = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  async me(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();
       if (!ctx) {
-        res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Unauthorized" } });
+        res
+          .status(401)
+          .json({ error: { code: "UNAUTHORIZED", message: "Unauthorized" } });
         return;
       }
       const user = await this.service.getMe(ctx.userId);
@@ -101,5 +124,5 @@ export class AuthController {
     } catch (err) {
       next(err);
     }
-  };
+  }
 }
