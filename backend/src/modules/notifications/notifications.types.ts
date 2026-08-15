@@ -1,0 +1,9 @@
+export type NotificationType =
+  | "MEMBER_INVITED"
+  | "PAYMENT_SUCCESS"
+  | "PAYMENT_FAILED"
+  | "SUB_UPGRADED"
+  | "SUB_DOWNGRADED"
+  | "SUB_CANCELLED"
+  | "PASSWORD_RESET"
+  | "SUB_EXPIRING_SOON";
