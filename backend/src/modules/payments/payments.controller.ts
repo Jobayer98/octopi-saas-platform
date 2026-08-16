@@ -28,7 +28,7 @@ export class PaymentsController {
 
   async getStatusPublic(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { orgId } = req.params;
+      const orgId = req.params.orgId as string;
       res.json(await this.service.getCheckoutStatus(orgId));
     } catch (err) { next(err); }
   }
