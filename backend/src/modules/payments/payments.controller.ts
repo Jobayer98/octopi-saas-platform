@@ -26,6 +26,13 @@ export class PaymentsController {
     } catch (err) { next(err); }
   }
 
+  async getStatusPublic(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { orgId } = req.params;
+      res.json(await this.service.getCheckoutStatus(orgId));
+    } catch (err) { next(err); }
+  }
+
   async getPaymentHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ctx = getTenantContext();

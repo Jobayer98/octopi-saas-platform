@@ -11,6 +11,7 @@ export function createPaymentsRouter(controller: PaymentsController): Router {
 
   router.post("/session", authenticate, authorizeTenant, controller.createSession.bind(controller));
   router.get("/status", authenticate, authorizeTenant, controller.getStatus.bind(controller));
+  router.get("/status/:orgId", controller.getStatusPublic.bind(controller));
   // Billing history also accessible via /org/billing/payments — mounted under /checkout here
   router.get("/payments", ...orgAdmin, controller.getPaymentHistory.bind(controller));
 

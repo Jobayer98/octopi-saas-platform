@@ -22,9 +22,19 @@ export function createApp() {
 
   // Security headers
   app.use(helmet());
+  const allowedOrigins = [
+    env.FRONTEND_URL,
+    ...(env.NGROK_URL ? [env.NGROK_URL] : []),
+  ];
+
   app.use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: (origin, cb) => {
+        // allow server-to-server (no origin) and Stripe webhooks
+        if (!origin) return cb(null, true);
+        if (allowedOrigins.includes(origin)) return cb(null, true);
+        cb(new Error(`CORS blocked: ${origin}`));
+      },
       credentials: true,
     }),
   );

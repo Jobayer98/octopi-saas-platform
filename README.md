@@ -337,6 +337,16 @@ Created by `npm run seed`:
 
 A second org (`Pending Co`) is seeded in `PENDING_PAYMENT` status to test the checkout/retry flow.
 
+### Stripe Test Cards
+
+Use these on the Stripe-hosted checkout page (any future expiry, any CVC, any ZIP):
+
+| Scenario | Card Number |
+| -------- | ----------- |
+| ✅ Payment succeeds (India / INR) | `4000 0035 6000 0008` |
+| ❌ Card declined | `4000 0000 0000 0002` |
+| ❌ Insufficient funds | `4000 0000 0000 9995` |
+
 ---
 
 ## Known Limitations

@@ -43,9 +43,10 @@ export class WebhooksRepository {
         },
       });
 
-      // 4. Create Payment (SUCCESS)
-      const payment = await tx.payment.create({
-        data: {
+      // 4. Create Payment (SUCCESS) — upsert in case of duplicate delivery
+      const payment = await tx.payment.upsert({
+        where: { stripeCheckoutSessionId: data.stripeSessionId },
+        create: {
           organizationId: data.organizationId,
           subscriptionId: data.subscriptionId,
           amountCents: data.amountCents,
@@ -53,18 +54,22 @@ export class WebhooksRepository {
           status: "SUCCESS",
           stripeCheckoutSessionId: data.stripeSessionId,
         },
+        update: { status: "SUCCESS" },
       });
 
-      // 5. Create Transaction (SUCCESS)
-      await tx.transaction.create({
-        data: {
-          organizationId: data.organizationId,
-          paymentId: payment.id,
-          type: "SUBSCRIPTION_PAYMENT",
-          status: "SUCCESS",
-          amountCents: data.amountCents,
-        },
-      });
+      // 5. Create Transaction (SUCCESS) — only if not already created
+      const existingTx = await tx.transaction.findUnique({ where: { paymentId: payment.id } });
+      if (!existingTx) {
+        await tx.transaction.create({
+          data: {
+            organizationId: data.organizationId,
+            paymentId: payment.id,
+            type: "SUBSCRIPTION_PAYMENT",
+            status: "SUCCESS",
+            amountCents: data.amountCents,
+          },
+        });
+      }
 
       return payment;
     });
@@ -90,8 +95,10 @@ export class WebhooksRepository {
         },
       });
 
-      const payment = await tx.payment.create({
-        data: {
+      // upsert — same session can fire multiple failure events (payment_intent.payment_failed + checkout.session.expired)
+      const payment = await tx.payment.upsert({
+        where: { stripeCheckoutSessionId: data.stripeSessionId },
+        create: {
           organizationId: data.organizationId,
           subscriptionId: data.subscriptionId,
           amountCents: data.amountCents,
@@ -100,17 +107,25 @@ export class WebhooksRepository {
           stripeCheckoutSessionId: data.stripeSessionId,
           failureReason: data.failureReason,
         },
-      });
-
-      await tx.transaction.create({
-        data: {
-          organizationId: data.organizationId,
-          paymentId: payment.id,
-          type: "SUBSCRIPTION_PAYMENT",
+        update: {
           status: "FAILED",
-          amountCents: data.amountCents,
+          failureReason: data.failureReason,
         },
       });
+
+      // only create transaction if it doesn't exist yet for this payment
+      const existingTx = await tx.transaction.findUnique({ where: { paymentId: payment.id } });
+      if (!existingTx) {
+        await tx.transaction.create({
+          data: {
+            organizationId: data.organizationId,
+            paymentId: payment.id,
+            type: "SUBSCRIPTION_PAYMENT",
+            status: "FAILED",
+            amountCents: data.amountCents,
+          },
+        });
+      }
 
       return payment;
     });

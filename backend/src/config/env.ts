@@ -21,5 +21,6 @@ export const env = {
   SMTP_PASS: process.env.SMTP_PASS ?? "",
   SMTP_FROM: process.env.SMTP_FROM ?? "noreply@platform.dev",
   FRONTEND_URL: process.env.FRONTEND_URL ?? "http://localhost:3000",
+  NGROK_URL: process.env.NGROK_URL ?? "",
   NODE_ENV: process.env.NODE_ENV ?? "development",
 };

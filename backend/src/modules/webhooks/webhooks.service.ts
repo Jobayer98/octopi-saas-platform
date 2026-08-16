@@ -23,8 +23,12 @@ export class WebhooksService {
 
     // 2. Idempotency check — if already processed, short-circuit
     const alreadyProcessed = await this.repo.webhookEventExists(stripeEvent.id);
-    if (alreadyProcessed) return;
+    if (alreadyProcessed) {
+      console.log(`[webhook] already processed: ${stripeEvent.id}`);
+      return;
+    }
 
+    console.log(`[webhook] processing: ${stripeEvent.type} ${stripeEvent.id}`);
     const session = stripeEvent.data.object;
 
     switch (stripeEvent.type) {
@@ -34,8 +38,17 @@ export class WebhooksService {
       case "checkout.session.expired":
         await this.handleCheckoutFailed(stripeEvent.id, stripeEvent.type, session, "Session expired");
         break;
+      case "payment_intent.payment_failed": {
+        // session object here is a PaymentIntent — extract metadata differently
+        const pi = stripeEvent.data.object as Record<string, unknown>;
+        const reason =
+          ((pi.last_payment_error as Record<string, unknown>)?.message as string) ??
+          "Payment failed";
+        await this.handleCheckoutFailed(stripeEvent.id, stripeEvent.type, pi, reason);
+        break;
+      }
       default:
-        // Unhandled event types — record and ignore
+        console.log(`[webhook] unhandled event type: ${stripeEvent.type}`);
         break;
     }
   }

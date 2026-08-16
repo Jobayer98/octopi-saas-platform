@@ -50,8 +50,11 @@ export class PaymentsService {
   }
 
   async getCheckoutStatus(organizationId: string) {
-    const sub = await this.subsRepo.findActiveByOrg(organizationId);
-    return { organizationId, subscription: sub };
+    const [org, sub] = await Promise.all([
+      prisma.organization.findUnique({ where: { id: organizationId }, select: { status: true } }),
+      this.subsRepo.findLatestByOrg(organizationId),
+    ]);
+    return { organizationId, orgStatus: org?.status ?? "PENDING_PAYMENT", subscription: sub };
   }
 
   async getPaymentHistory(organizationId: string, page: number, limit: number) {
